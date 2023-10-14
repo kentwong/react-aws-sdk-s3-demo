@@ -59,14 +59,12 @@
     "@types/react-dom": "^17.0.9",
     "@types/systemjs": "^6.1.1",
     "@types/webpack-env": "^1.16.2",
-    "file-saver": "^2.0.5",
     "js-file-download": "^0.4.12",
     "lru-cache": "^10.0.1",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "single-spa": "^5.9.3",
-    "single-spa-react": "^4.3.1",
-    "stream": "^0.0.2"
+    "single-spa-react": "^4.3.1"
   },
   "types": "dist/amethyst-amethyst.d.ts"
 }

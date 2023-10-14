@@ -4,9 +4,6 @@ import React, { useEffect, useState } from "react";
 import { createSTSClient } from "./awsconfig"; // Adjust the import path
 import { ListObjectsCommand, GetObjectCommand, GetObjectCommandOutput } from "@aws-sdk/client-s3";
 import fileDownload from "js-file-download";
-import Readable from "stream";
-import { saveAs } from "file-saver";
-import { Stream } from "stream"; // Import the stream module
 import { LRUCache } from "lru-cache";
 
 // Create a cache with a maximum size and TTL of 1 hour (in milliseconds)
@@ -17,7 +14,8 @@ interface S3Object {
   // Add any other properties you need here
 }
 
-const jwtToken = "REDACTED";
+const jwtToken =
+  "eyJraWQiOiJCZzZMelpBU3RMcUYwbGh3ekZrN1BTWE9GZ3JtZlZBWjROSmQwZHY5Vzk4PSIsImFsZyI6IlJTMjU2In0.eyJhdF9oYXNoIjoiZXhZbDVvZkoyZURIODN1bTM2RUJ4dyIsInN1YiI6ImZhNTM2ODgyLWVlYTMtNDY5MC1hNDkyLWRiZDZmZjFhYjE2MyIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJpc3MiOiJodHRwczpcL1wvY29nbml0by1pZHAuYXAtc291dGhlYXN0LTIuYW1hem9uYXdzLmNvbVwvYXAtc291dGhlYXN0LTJfNTh1SWxydG1jIiwiY29nbml0bzp1c2VybmFtZSI6ImtlbnR3b25nIiwib3JpZ2luX2p0aSI6IjhkZjFjYWIxLTFhMTEtNDNmNy1iMTI3LTEwNGE1ZjI4ODViZSIsImF1ZCI6IjJqaDMycmRrNTY5dWpiYzM5MHJhZWc5cGphIiwidG9rZW5fdXNlIjoiaWQiLCJhdXRoX3RpbWUiOjE2OTcyODgwMDcsImV4cCI6MTY5NzI4ODMwNywiaWF0IjoxNjk3Mjg4MDA3LCJqdGkiOiI1MTI4YzZkYi1mZTk3LTQ1MDktODkwNi01NjQ3NjZkY2RjNGYiLCJlbWFpbCI6ImtlbnRfd29uZ0BvdXRsb29rLmNvbSJ9.A3uNGxU3Mnj3aGwN4RUmHkwXMZGknKoabjz9ZnzVA-lusMeVIOcX9rghHzcf1v3rzxJ1nSkOoxAUEhRSvO9mnUHaDCpOyzVTvAp9T5Hr-yV5IwnBGTCSlwHxSRuyg7C0fkfcAecuyHZPv7qGTgti8UeAC-OzpZKsa8g63l3Wl0SL5Hrd5E9ODbn2us0rqsFavjh28kiTQOq9hBPWEm5KWnB9mPaEU72GDp6XXw1Qup-ooIIzwXCEewyrd2LKu6gmAZ5aWQu1iftTNg3QeF4D-BxiDpRcHj-W6vuXrddIkUK02qTx-UBzSH1A4Hp4aGA0nPIoT_6Ql8fKsEuusaD4Og";
 const roleArn = "arn:aws:iam::724090930373:role/s3-test-role";
 const sessionName = "your-session-name";
 
@@ -151,7 +149,24 @@ export function S3FileList() {
       // // console.log("str: ", str);
       // downloadCSVFromReadableStream(stream, "stream.csv");
 
-      // Option 3 - save file blob directly.
+      // Option 3 - save file blob directly. It is streaming BLOB value.
+      // const reader = response.Body.getReader();
+      // // Create initial empty blob
+      // let totalBlob = new Blob();
+
+      // while (true) {
+      //   const { done, value } = await reader.read();
+
+      //   if (done) {
+      //     saveBlobToFile(totalBlob, key);
+      //     break;
+      //   }
+
+      //   // Concatenate new chunk blob
+      //   totalBlob = new Blob([totalBlob, value]);
+      // }
+
+      // Option 4 - use js-file-download
       const reader = response.Body.getReader();
       // Create initial empty blob
       let totalBlob = new Blob();
@@ -160,7 +175,7 @@ export function S3FileList() {
         const { done, value } = await reader.read();
 
         if (done) {
-          saveBlobToFile(totalBlob, key);
+          fileDownload(totalBlob, key);
           break;
         }
 
